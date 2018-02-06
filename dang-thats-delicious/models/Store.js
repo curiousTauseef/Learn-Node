@@ -58,14 +58,15 @@ storeSchema.pre('save', async function(next){
 
 storeSchema.statics.getTagsList = function() {
   // Not arrow function, scope of this must be bound to the model
-  // Pass array of mongodb pipeline operators.
+  // Pass the aggregate method an array of mongodb pipeline operators.
   return this.aggregate([
     {$unwind: '$tags'}, // create store object for each tag
     {$group: {
       _id: '$tags', // group by tag
       count: {$sum: 1} // add new property count and add 1 for every time it groups
-    }  
-  }]);
+    }},
+    {$sort: { count: -1 }} // Sort by the count property. 1 = ascending, 2 = descending. 
+  ]);
 }
 
 module.exports = mongoose.model('Store', storeSchema);
